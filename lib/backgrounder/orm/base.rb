@@ -109,7 +109,15 @@ module CarrierWave
             end
 
             def enqueue_#{column}_background_job
-              CarrierWave::Backgrounder.enqueue_for_backend(#{worker}, self.class.name, id.to_s, #{column}.mounted_as)
+              # CarrierWave::Backgrounder.enqueue_for_backend(#{worker}, self.class.name, id.to_s, #{column}.mounted_as)
+              if #{column}.is_a?(Array)
+                #{column}.map(&:mounted_as).each do |mounted_as|
+                  CarrierWave::Backgrounder.enqueue_for_backend(#{worker}, self.class.name, id.to_s, mounted_as)
+                end
+              else
+                CarrierWave::Backgrounder.enqueue_for_backend(#{worker}, self.class.name, id.to_s, #{column}.mounted_as)
+              end
+
             end
           RUBY
         end

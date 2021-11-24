@@ -14,7 +14,10 @@ module CarrierWave
 
         if record && record.send(:"#{column}").present?
           record.send(:"process_#{column}_upload=", true)
-          if record.send(:"#{column}").recreate_versions! && record.respond_to?(:"#{column}_processing")
+          # if record.send(:"#{column}").recreate_versions! && record.respond_to?(:"#{column}_processing")
+          attachments = record.send(:"#{column}").is_a?(Array) ? record.send(:"#{column}") : [record.send(:"#{column}")]
+          if attachments.each(&:recreate_versions!) && record.respond_to?(:"#{column}_processing")
+
             record.update_attribute :"#{column}_processing", false
           end
         else

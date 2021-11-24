@@ -19,10 +19,10 @@ module CarrierWave
             options = self.class.uploader_options[column] || {}
             serialization_column = options[:mount_on] || column
 
-            send(:"#{serialization_column}_changed?") ||              # after_save support
-            previous_changes.has_key?(:"#{serialization_column}") ||  # after_commit support
-            send(:"remote_#{column}_url").present? ||                 # Remote upload support
-            send(:"#{column}_cache").present?                         # Form failure support
+            send(:"saved_change_to_#{serialization_column}?") ||                          # after_save support
+              saved_changes.has_key?(:"#{serialization_column}") ||                         # after_commit support
+              send(:"remote_#{column}_url#{'s' if send(column).is_a?(Array)}").present? || # Remote upload support
+              send(:"#{column}_cache").present?                                             # Form failure support
           end
         end
 
